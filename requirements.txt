@@ -1,28 +1,11 @@
-# ── Core UI ───────────────────────────────────────────────
 streamlit
-
-# ── LLM API ───────────────────────────────────────────────
 groq
-
-# ── PDF Extraction ────────────────────────────────────────
 pdfplumber
 PyMuPDF
 llama-parse
 nest-asyncio
-
-# ── NER ───────────────────────────────────────────────────
-# Install spaCy via conda (avoids Windows build issues):
-# conda install -c conda-forge spacy
 scispacy
-
-# scispaCy medical model (run separately):
-# pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_ner_bc5cdr_md-0.5.4.tar.gz
-
-# ── Evaluation ────────────────────────────────────────────
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_ner_bc5cdr_md-0.5.4.tar.gz
 rouge-score
-
-# ── Observability ─────────────────────────────────────────
 prometheus-client
-
-# ── Environment ───────────────────────────────────────────
 python-dotenv
