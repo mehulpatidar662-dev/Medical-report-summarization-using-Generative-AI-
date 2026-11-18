@@ -12,7 +12,8 @@ env/
 !.env.example
 
 # Streamlit
-.streamlit/
+.streamlit/*
+!.streamlit/config.toml
 
 # Temporary & Upload files
 temp_upload.pdf
