@@ -10,15 +10,15 @@ class SummarizationEngine:
         self.api_key = api_key
         self.client = None
         self.model_name = "openai/gpt-oss-120b" 
+        self._model_resolved = False
         if api_key and "PASTE" not in api_key:
             try:
                 self.client = Groq(api_key=api_key)
-                self._resolve_model()
             except Exception:
                 self.client = None
 
     def _resolve_model(self):
-        if not self.client:
+        if not self.client or self._model_resolved:
             return
         preferred_models = [
             "openai/gpt-oss-120b",
@@ -33,10 +33,12 @@ class SummarizationEngine:
             for pref in preferred_models:
                 if pref in available:
                     self.model_name = pref
+                    self._model_resolved = True
                     return
             for m in available:
                 if "whisper" not in m and "guard" not in m:
                     self.model_name = m
+                    self._model_resolved = True
                     return
         except Exception:
             pass
@@ -46,7 +48,7 @@ class SummarizationEngine:
             self.api_key = api_key
             try:
                 self.client = Groq(api_key=api_key)
-                self._resolve_model()
+                self._model_resolved = False
             except Exception:
                 self.client = None
 
@@ -56,6 +58,8 @@ class SummarizationEngine:
         """
         if api_key:
             self.set_api_key(api_key)
+
+        self._resolve_model()
 
         if not self.client:
             return {

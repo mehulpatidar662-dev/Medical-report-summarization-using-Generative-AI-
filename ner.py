@@ -3,10 +3,14 @@ from observability import logger, ENTITY_COUNT
 
 class NEREngine:
     def __init__(self):
-        # Try loading the medical model, fallback to standard English
-        models = ["en_ner_bc5cdr_md", "en_core_web_sm"]
         self.nlp = None
-        
+        self.model_name = "en_ner_bc5cdr_md"
+        logger.info("ner_engine_created_lazy")
+
+    def _load_model(self):
+        if self.nlp is not None:
+            return
+        models = ["en_ner_bc5cdr_md", "en_core_web_sm"]
         for model in models:
             try:
                 self.nlp = spacy.load(model)
@@ -16,7 +20,6 @@ class NEREngine:
                 continue
         
         if not self.nlp:
-            # If nothing is installed, download the small one automatically
             logger.warning("downloading_fallback_model")
             spacy.cli.download("en_core_web_sm")
             self.nlp = spacy.load("en_core_web_sm")
@@ -28,12 +31,12 @@ class NEREngine:
         """
         Returns a list of (text, label) tuples.
         """
+        self._load_model()
         doc = self.nlp(text)
         entities = []
         
         for ent in doc.ents:
             entities.append((ent.text, ent.label_))
-            # CORRECT USAGE: .inc() for Counters
             ENTITY_COUNT.labels(entity_type=ent.label_).inc()
             
         return entities
@@ -52,6 +55,7 @@ class NEREngine:
     def entity_recall(self, entities: list, summary: str) -> float:
         if not entities:
             return 0.0
+        self._load_model()
         summary_lower = summary.lower()
         matched = sum(1 for text, label in entities if text.lower() in summary_lower)
         recall  = round(matched / len(entities), 4)
